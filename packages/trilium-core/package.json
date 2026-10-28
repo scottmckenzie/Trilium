@@ -12,6 +12,7 @@
     "@ai-sdk/deepseek": "3.0.73",
     "@ai-sdk/google": "4.0.105",
     "@ai-sdk/openai": "4.0.102",
+    "@ai-sdk/xai": "5.0.30",
     "@braintree/sanitize-url": "7.1.2",
     "@openrouter/ai-sdk-provider": "3.1.0",
     "@triliumnext/codemirror": "workspace:*",
