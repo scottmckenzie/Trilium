@@ -30,7 +30,7 @@ export interface LlmProviderSetup {
 }
 
 /** Provider type identifiers that can be instantiated, for error messages. */
-const PROVIDER_TYPES = ["anthropic", "openai", "google", "deepseek", "openrouter", "claude-agent", "copilot-agent", "antigravity-agent", "codex-agent", "ollama", "lmstudio", "openai-compatible"];
+const PROVIDER_TYPES = ["anthropic", "openai", "google", "deepseek", "openrouter", "xai", "claude-agent", "copilot-agent", "antigravity-agent", "codex-agent", "ollama", "lmstudio", "openai-compatible"];
 
 /**
  * Instantiate a provider from its type identifier.
@@ -64,6 +64,9 @@ async function createProviderInstance(provider: string, apiKey: string, baseURL?
             return new (await import("./providers/deepseek.js")).DeepSeekProvider(apiKey, baseURL);
         case "openrouter":
             return new (await import("./providers/openrouter.js")).OpenRouterProvider(apiKey, baseURL);
+        // OpenAI-compatible on the wire; own card so Grok ids hit the price table.
+        case "xai":
+            return new (await import("./providers/xai.js")).XaiProvider(apiKey, baseURL);
         // Subscription providers, whose credentials belong to the host rather than
         // to a key the user pastes in — so the host builds them. One branch each,
         // naming its own type: see HOST_PROVIDED_TYPES.

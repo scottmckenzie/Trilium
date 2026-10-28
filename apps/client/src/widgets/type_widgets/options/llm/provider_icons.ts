@@ -27,7 +27,8 @@ export const PROVIDER_ICONS: Record<string, string> = {
     "perplexity": "tn-brand tn-brand-perplexity",
     "searxng": "tn-brand tn-brand-searxng",
     "serper": "tn-brand tn-brand-serper",
-    "tavily": "tn-brand tn-brand-tavily"
+    "tavily": "tn-brand tn-brand-tavily",
+    "xai": "tn-brand tn-brand-xai"
 };
 
 /**

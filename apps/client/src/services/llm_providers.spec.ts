@@ -75,6 +75,7 @@ describe("resolveWebSearch", () => {
     it("uses the model's built-in search by default, where the model has one", () => {
         expect(resolve("anthropic")).toEqual({ choice: "builtin", enableWebSearch: true, webSearchProviderId: undefined });
         expect(resolve("deepseek")).toEqual({ choice: "builtin", enableWebSearch: true, webSearchProviderId: undefined });
+        expect(resolve("xai")).toEqual({ choice: "builtin", enableWebSearch: true, webSearchProviderId: undefined });
         expect(resolve("ollama")).toMatchObject({ choice: "builtin", enableWebSearch: false, builtInUnavailableKey: "llm_chat.web_search_builtin_unsupported" });
         // Gemini can't combine its own search with note tools.
         expect(resolve("google", { enableNoteTools: true })).toMatchObject({ enableWebSearch: false, builtInUnavailableKey: "llm_chat.web_search_unavailable_gemini" });

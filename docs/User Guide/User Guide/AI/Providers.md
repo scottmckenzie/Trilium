@@ -10,6 +10,7 @@ Currently, the following cloud providers are supported:
 *   <span class="tn-icon tn-brand tn-brand-gemini"></span> Gemini
 *   <span class="tn-icon tn-brand tn-brand-deepseek"></span> DeepSeek
 *   <span class="tn-icon tn-brand tn-brand-openrouter"></span> [OpenRouter](https://openrouter.ai/settings/keys)
+*   <span class="tn-icon tn-brand tn-brand-xai"></span> [xAI](https://console.x.ai/)
 
 For all the providers, an API key is needed. Note that this is charged separately from the subscription you might already have (e.g. Claude Pro). If that might be a problem, consider using either a subscription provider (see below) or using it externally via MCP.
 
@@ -28,6 +29,8 @@ For OpenRouter, the models are billed to your OpenRouter credits, and their pric
 *   Requests are attributed to Trilium on your OpenRouter activity page.
 
 For Gemini, a chat that doesn't specify a model uses `gemini-3.8-flash`, and the automatically generated chat titles use `gemini-3.5-flash-lite`. A model you select explicitly is used as is and isn't affected by these defaults.
+
+For xAI, a chat that doesn't specify a model uses `grok-4.7`, and chat titles use `grok-4.3`. Image, video and voice models are left out of the picker. Models that take a reasoning effort show the effort dropdown in the chat (_None_ through _Xhigh_).
 
 > [!NOTE]
 > We don't plan to support all cloud providers, even if the library we are using would theoretically support them. Before opening a PR adding support for a different cloud provider, make sure to discuss it over [GitHub Discussions](https://github.com/orgs/TriliumNext/discussions).

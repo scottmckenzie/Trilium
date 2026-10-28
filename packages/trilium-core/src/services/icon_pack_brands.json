@@ -137,6 +137,12 @@
       "terms": [
         "tavily"
       ]
+    },
+    "tn-brand-xai": {
+      "glyph": "",
+      "terms": [
+        "xai"
+      ]
     }
   },
   "metrics": {

@@ -4,9 +4,11 @@
  * cost metadata (the hand-curated per-provider model arrays were removed).
  *
  * Source: LiteLLM's community-maintained `model_prices_and_context_window.json`
- * (MIT). We keep only the bare, unprefixed ids that Trilium's own `/models`
- * endpoints return for the three metered providers we support, projected down to
- * `{ input, output, ctx }` (USD per **million** tokens; LiteLLM stores per-token).
+ * (MIT). We keep only the bare ids that Trilium's own `/models` endpoints return
+ * for the metered providers we support (Anthropic, OpenAI, Google, DeepSeek, xAI),
+ * projected down to `{ input, output, ctx }` (USD per **million** tokens; LiteLLM
+ * stores per-token). xAI's LiteLLM keys are `xai/grok-*`; the script strips that
+ * prefix so the table matches the bare ids the API lists.
  *
  * Not run at build time — the build imports the committed JSON directly and stays
  * hermetic. This runs on demand (or from the weekly `update-model-prices.yml`
@@ -34,21 +36,34 @@ const OUTPUT_PATH = fileURLToPath(
  * `gemini/…`-prefixed duplicates we don't want). Prefixed keys (`bedrock/…`,
  * `vertex_ai/…`, `azure/…`) never match our endpoints, so they are excluded.
  */
+/**
+ * LiteLLM's xAI rows are keyed `xai/grok-*` while Trilium's `/models` returns the
+ * bare `grok-*` id. Strip that one prefix; every other slash-prefixed route
+ * (bedrock, azure, vertex, …) is still rejected below.
+ */
+function bareModelKey(key: string): string {
+    return key.startsWith("xai/") ? key.slice("xai/".length) : key;
+}
+
 function classify(key: string, provider: string | undefined): string | null {
-    if (key.includes("/")) {
+    const id = bareModelKey(key);
+    if (id.includes("/")) {
         return null; // prefixed vendor route — never what our endpoints return
     }
-    if (/^claude-/.test(key) && provider === "anthropic") {
+    if (/^claude-/.test(id) && provider === "anthropic") {
         return "anthropic";
     }
-    if (/^(gpt-|o\d|chatgpt-)/.test(key) && provider === "openai") {
+    if (/^(gpt-|o\d|chatgpt-)/.test(id) && provider === "openai") {
         return "openai";
     }
-    if (/^gemini-/.test(key)) {
+    if (/^gemini-/.test(id)) {
         return "google"; // provider tag is unreliable here; key shape is not
     }
-    if (/^deepseek-/.test(key) && provider === "deepseek") {
+    if (/^deepseek-/.test(id) && provider === "deepseek") {
         return "deepseek";
+    }
+    if (/^grok-/.test(id) && provider === "xai") {
+        return "xai";
     }
     return null;
 }
@@ -61,7 +76,7 @@ const PER_MILLION = 1_000_000;
  * DeepSeek's floor is low because its catalog genuinely is — a handful of rolling
  * aliases rather than a wall of dated snapshots.
  */
-const SANITY_FLOOR: Record<string, number> = { anthropic: 5, openai: 10, google: 5, deepseek: 2 };
+const SANITY_FLOOR: Record<string, number> = { anthropic: 5, openai: 10, google: 5, deepseek: 2, xai: 5 };
 
 interface LiteLlmEntry {
     litellm_provider?: string;
@@ -108,7 +123,8 @@ async function main() {
         if (typeof ctx === "number" && ctx > 0) {
             price.ctx = ctx;
         }
-        (table[provider] ??= {})[key] = price;
+        // Store under the bare id Trilium's `/models` returns (`grok-4.7`, not `xai/grok-4.7`).
+        (table[provider] ??= {})[bareModelKey(key)] = price;
     }
 
     for (const [provider, floor] of Object.entries(SANITY_FLOOR)) {
